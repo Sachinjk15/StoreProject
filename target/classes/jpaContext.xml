@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
+
+
+	<jpa:repositories base-package="com.store.user.repository" />
+	<context:component-scan base-package="com.store" />
+
+
+
+
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="punit" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+			</bean>
+		</property>
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+				<entry key="hibernate.hbm2ddl.auto" value="update" />
+				<entry key="hibernate.format_sql" value="true" />
+			</map>
+		</property>
+	</bean>
+
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/store_database?useUnicode=true&amp;autoReconnect=true&amp;createDatabaseIfNotExist=true&amp;" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<bean id="sessionfactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource">
+
+			<!-- <ref bean="dataSource" ></ref> -->
+		</property>
+
+		<property name="annotatedClasses">
+			<list>
+				<value>com.store.model.User</value>
+				<value>com.store.model.Store</value>
+				<value>com.store.model.Product</value>
+				<value>com.store.model.Review</value>
+				<value>com.store.model.MainOffer</value>
+				<value>com.store.model.SaveProduct</value>
+				<value>com.store.model.SaveStore</value>
+				<value>com.store.model.SaveReview</value>
+				<value>com.store.model.HitCount</value>
+				<value>com.store.model.ShoppingCenter</value>
+				<value>com.store.model.ContactUs</value>
+				<value>com.store.controller.GlobelException.GlobelExceptionHandler</value>
+
+			</list>
+		</property>
+
+		<!-- <property name="hibernateProperties"> <props> <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop> 
+			<prop key="hibernate.hbm2ddl.auto">update</prop> <prop key="hibernate.show_sql">true</prop> 
+			<prop key="hibernate.format_sql">true</prop> </props> </property> -->
+	</bean>
+
+
+	<!-- <bean id="OfferDaoImp" class="com.store.dao.impl.OfferDaoImp"> <property 
+		name="sessionFactory" ref="sessionfactory"></property> </bean> <bean id="offerService" 
+		class="com.store.service.impl.OfferServiceImp"> <property name="offerDao" 
+		ref="OfferDaoImp"></property> </bean> -->
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- one of the properties available; the maximum file size in bytes -->
+		<property name="maxUploadSize" value="100000000" />
+	</bean>
+
+	<!-- <jdbc:initialize-database data-source="dataSource"> <jdbc:script location="classpath:db/adminUser.sql"/> 
+		</jdbc:initialize-database> -->
+</beans>
+
+
